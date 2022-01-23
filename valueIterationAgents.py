@@ -25,11 +25,16 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
+# Edited by : Seyed Nami Modarressi
 
+from os import stat
 import mdp, util
 
 from learningAgents import ValueEstimationAgent
 import collections
+
+MIN_NUMBER = -9999
+MAX_NUMBER = 9999
 
 class ValueIterationAgent(ValueEstimationAgent):
     """
@@ -60,9 +65,18 @@ class ValueIterationAgent(ValueEstimationAgent):
         self.runValueIteration()
 
     def runValueIteration(self):
-        # Write value iteration code here
-        "*** YOUR CODE HERE ***"
-
+        for i in range(0,self.iterations):
+            counter = util.Counter()
+            for s in self.mdp.getStates():
+                max = MIN_NUMBER
+                for a in self.mdp.getPossibleActions(s):
+                    q = self.computeQValueFromValues(s, a)
+                    if max < q :
+                        counter[s] = q
+                        max = q
+                    else :
+                        counter[s] = max
+            self.values = counter
 
     def getValue(self, state):
         """
@@ -77,7 +91,12 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        q = 0
+        for node in self.mdp.getTransitionStatesAndProbs(state, action):
+            r = self.mdp.getReward(state, action, node[0])
+            next_node_q_value = self.values[node[0]]
+            q = q + node[1] * (r + next_node_q_value * self.discount)
+        return q
 
     def computeActionFromValues(self, state):
         """
@@ -89,7 +108,17 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        max = MIN_NUMBER
+        action = None
+        for a in self.mdp.getPossibleActions(state):
+            q = self.computeQValueFromValues(state, a)
+            if max < q :
+                action = a
+                max = q
+        if self.mdp.isTerminal(state):
+            action = None
+            self.values[state] = 0
+        return action
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
