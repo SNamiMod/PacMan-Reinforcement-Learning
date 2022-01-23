@@ -20,8 +20,8 @@
 # value iteration.
 
 def question2():
-    answerDiscount = 0.9
-    answerNoise = 0.2
+    answerDiscount = 0.9 
+    answerNoise = 0 # => min = (0.9 ^ 4) * 10 = 6.5 > 1
     return answerDiscount, answerNoise
 
 def question3a():
