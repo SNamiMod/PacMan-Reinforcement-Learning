@@ -191,4 +191,59 @@ class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
 
     def runValueIteration(self):
         "*** YOUR CODE HERE ***"
+        queue = util.PriorityQueue()
+        p_states = {} 
+        for s in self.mdp.getStates():
+            if self.mdp.isTerminal(s) == True:
+                continue
+            else:
+                actions = self.mdp.getPossibleActions(s)
+                for a in actions :
+                    for node in self.mdp.getTransitionStatesAndProbs(s, a):
+                        flag = False
+                        for temp in p_states:
+                            if temp == node[0]:
+                                flag = True
+                                break
+                        if flag == True :
+                            p_states[node[0]].add(s)
+                        else:
+                            p_states[node[0]] = {s}
 
+        for s in self.mdp.getStates():
+            if self.mdp.isTerminal(s) == True :
+                continue
+            else :
+                value = self.values[s]
+                temp = []
+                for action in self.mdp.getPossibleActions(s):
+                    temp.append(self.computeQValueFromValues(s, action))
+                max_q = max(temp)
+                diff = abs(value - max_q)
+                queue.update(s, -diff)
+
+        for i in range(0, self.iterations):
+            if queue.isEmpty():
+                break
+            else :
+                state = queue.pop()
+                if self.mdp.isTerminal(state) == True:
+                    continue
+                else:
+                    temp = []
+                    for a in self.mdp.getPossibleActions(state) :
+                        temp.append(self.computeQValueFromValues(state, a))
+                    self.values[state] = max (temp)
+
+                for s in p_states[state]:
+                    if self.mdp.isTerminal(s) == True:
+                        continue
+                    else :
+                        v = self.values[s]
+                        t = []
+                        for a in self.mdp.getPossibleActions(s) :
+                            t.append(self.computeQValueFromValues(s, a))
+                        m = max(t)
+                        diff = abs(v - m)
+                        if diff > self.theta:
+                            queue.update(s, -diff)
