@@ -19,6 +19,9 @@
 # Set the given parameters to obtain the specified policies through
 # value iteration.
 
+from tkinter.messagebox import NO
+
+
 def question2():
     answerDiscount = 0.9 
     answerNoise = 0 # => min = (0.9 ^ 4) * 10 = 6.5 > 1
@@ -62,7 +65,8 @@ def question3e():
 def question8():
     answerEpsilon = None
     answerLearningRate = None
-    return answerEpsilon, answerLearningRate
+    #return answerEpsilon, answerLearningRate
+    return 'NOT POSSIBLE'
     # If not possible, return 'NOT POSSIBLE'
 
 if __name__ == '__main__':
